@@ -1,0 +1,57 @@
+************************************************************
+DEPLOY DOCKER CONTAINER ON DOCKER SWARM
+************************************************************
+
+	WE HAVE ALREADY PREPARED ONE IMAGE 'dockerimage' pulled from github and pushed to docker hub
+
+continue...
+
+----------------------------------------------------------------------------------------------------
+
+docker swarm: managing multiple containers running on different host
+
+where we will initiate a swam that node will become leader (Master) and another can join this node and you can use this as worker node
+
+-----------------------------------------------------------------------------------------------------
+
+to set the permission
+
+> sudo chmod 666 /var/run/docker.sock
+
+
+STEP:1 INITATE DOCKER SWARM
+
+> sudo docker swarm init (machine will become leader node)
+
+---------------------------------------------------------------------------------------------
+output:
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-433mrb6jo52r0y0a7tyvbr0x867w5xt1leobq3im2hb71a8ulx-adasryq0zn4zokormh4drqdag 172.31.13.224:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+
+----------------------------------------------------------------------------------------
+
+*************************************************
+STEP:2 CREATE SERVICE IN THIS DOCKER SWARM
+*************************************************
+> sudo docker service create -p 80:80 --name myservice dockerimage
+output: verify: Service converged
+
+> curl localhost (you will see index.php app of docker_master)
+
+also you can copy the aws ip:80 on browser 
+
+***************************************************
+STEP:3 SCALE THE DOCKER CONTAINER ON DOCKER SWARM
+***************************************************
+> docker service ps myservice (name of your service)
+
+
+1.TO SCALE THE SERVICE
+------------------------
+> docker service scale myservice=3
+> docker service ls
+> docker service ps myservice
