@@ -1,0 +1,33 @@
+***********************************************************************
+STEP:1 LOOGED IN TO DOCKER HUB ACCOUNT
+***********************************************************************
+
+create an Account on dockerHub:
+
+Link: https://hub.docker.com/
+------------------------------------------------------------------------
+
+> sudo docker login
+
+give username:
+give password:
+[Note: password is not visible]
+
+if you are getting some permission denied error
+
+> sudo chmod 666 /var/run/docker.sock
+
+> sudo docker login
+
+give username:
+give password:
+[Note: password is not visible]
+
+****************************************************************************
+STEP:2 PUSH AN IMAGE TO DOCKER HUB
+****************************************************************************
+
+EG: sudo docker tag <name of your image> <username>/<name of your directory-you can give any name>
+
+> sudo docker tag dockerimage nikunj0510/myimage2023
+> sudo docker push nikunj0510/myimage2023
