@@ -99,7 +99,7 @@ run the token
 > sudo docker swarm join --token SWMTKN-1-3qrwn8i6x6gm8ykwvjhi622moyfyw2j94gih0zfzlr9sbhvhua-bwcfkp4jckqopmtrjd5iyhoxj 172.31.56.68:2377
 
 **********************************************************************************************
-STEP: 4 CREATING SERVICE WITH REPLICAS
+STEP: 4 CREATING SERVICE WITH REPLICAS(masternode)
 **********************************************************************************************
 
 1. CREATE YOUR IMAGE
