@@ -1,0 +1,132 @@
+***************************************************************
+STEP:1 AWS EC2  UBUNTU INSTANCE
+***************************************************************
+
+> CREATE 2 AWS UBUNTU INSTANCES
+> MAKE ONE AS 'MASTER' AND ANOTHER 'WORKER' 
+> COPY the private ip address of 'master' and 'worker' node
+
+*****************************************************************
+STEP:2 INSTALL DOCKER IN BOTH INSTANCE
+*****************************************************************
+
+goto>Google>Docker Installation on Ubuntu OS
+
+
+link:https://docs.docker.com/engine/install/ubuntu/
+----------------------------------------------------------------
+
+> sudo apt-get update
+
+> sudo apt-get install ca-certificates curl gnupg lsb-release
+
+> sudo mkdir -m 0755 -p /etc/apt/keyrings
+> curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+> echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+> sudo apt-get update
+
+> sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+1. TO  VERIFY THE INSTALLTION
+--------------------------------------
+
+> sudo docker -v
+		OUTPUT:Docker version 23.0.1, build a5ee5b1
+
+*******************************************************************
+STEP:3 EDIT /etc/host file to define master and worker node's ip
+*******************************************************************
+
+FOR MASTERNODE:
+------------------
+> sudo vi /etc/hosts
+> press 'i'
+
+> copy_master_node_ip_address master 
+> press 'esc'
+> :wq!
+
+> ping master
+
+if ping is started means all going right
+to stop the ping press 'ctr+c'
+
+FOR WORKERNODE:
+------------------
+> sudo vi /etc/hosts
+> press 'i'
+
+> copy_worker_node_ip_address worker 
+> press 'esc'
+> :wq!
+
+> ping worker
+
+if ping is started means all going right
+to stop the ping press 'ctr+c'
+*******************************************************************
+STEP:5 SWARM INITIALIZATION IN MASTER NODE
+*******************************************************************
+> sudo docker swarm init --advertise-adr your_ip_address_master_node
+> sudo docker swarm init --advertise-adr master
+
+or 
+
+> sudo docker swarm init
+
+
+[Note:
+1. after successfull attempt you will get one token fro connection with worker node
+2. copy that token and paste it to worker node by adding prefix 'sudo' <your token>
+]
+
+mytoken:
+-------------
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-3qrwn8i6x6gm8ykwvjhi622moyfyw2j94gih0zfzlr9sbhvhua-bwcfkp4jckqopmtrjd5iyhoxj 172.31.56.68:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+
+goto>workernode
+
+run the token
+
+> sudo docker swarm join --token SWMTKN-1-3qrwn8i6x6gm8ykwvjhi622moyfyw2j94gih0zfzlr9sbhvhua-bwcfkp4jckqopmtrjd5iyhoxj 172.31.56.68:2377
+
+**********************************************************************************************
+STEP: 4 CREATING SERVICE WITH REPLICAS
+**********************************************************************************************
+
+1. CREATE YOUR IMAGE
+-------------------------
+
+LINK: https://github.com/Nikunj-Java/docker_master.git
+
+> git clone https://github.com/Nikunj-Java/docker_master.git
+> ls (to check available folders)
+> cd docker_master
+
+
+1. LET'S PREPARE THE IMAGE IN A DOCKER CONTAINER
+------------------------------------------------------------
+> sudo docker build -t dockerimage . (. is mendatory)
+> sudo docker images (to check the image is prepared or not?)
+
+2. LET'S RUN THE IMAGE IN A DOCKER CONTAINER
+------------------------------------------------------------
+
+> sudo docker run -d --name mycontainer -p 80:80 dockerimage
+
+> sudo docker container ls
+--------------------------
+
+> sudo docker service create --name myclusterdemo1 --publish 8081:8081 --replicas 2 dockerimage
+
+3. CHECK THE RUNNING SERVICE
+------------------------------
+> sudo docker service ps myclusterdemo1
