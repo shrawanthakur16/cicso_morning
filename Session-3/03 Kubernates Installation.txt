@@ -91,7 +91,7 @@ edit the docker daemon file
 press 'i' and inser the below command
 
 {
- "exec-opts":"[native.cgroupdriver=systemd]"
+ "exec-opts":["native.cgroupdriver=systemd"]
 }
 
 
