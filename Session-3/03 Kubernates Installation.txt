@@ -167,4 +167,78 @@ let's deploy weave network to cluster
 > kubectl get pods --all-namespaces
 
 
+***************************************************************************************************************
+HOSTING SPRINGBOOT APP IN KUBERNATE PODS
+***************************************************************************************************************
+
+for springboot aplication
+1. MAVEN INSTALLTION
+2. JDK INSTALLTION
+3. CLONE YOUR APP FROM GIT HUB
+
+1.MAVEN INSTALLATION
+--------------------------
+> sudo apt-get update
+> sudo apt install maven -y
+
+2. JDK INSTALLTION
+--------------------------
+> sudo apt-get update
+> sudo apt install default-jdk -y
+
+3. CLONE YOUR APP
+--------------------------
+Note: APP MUST BE BUILD ON JDK 8
+
+> git clone https://github.com/Nikunj-Java/SpringBootDockerApp.git
+
+4. CHANGE THE DIRECTORY
+--------------------------
+> ls
+> cd SpringBootDockerApp 
+
+5. CREATE JAR FILE
+-------------------------
+> mvn clean install
+
+this will prepare demo-docker-0.0.1-SNAPSHOT.jar file
+
+6. RUN JAR FILE
+-------------------------
+> java -jar target/demo-docker-0.0.1-SNAPSHOT.jar
+
+
+7.CHECK THE OUTPUT
+-------------------------
+OPEN BROWSER IN YOUR LAB
+localhost:8082/greet/<Your Name>
+
+response: Hi!! <Your name>
+
+5. BUILD DOCKER IMAGE
+-------------------------
+> sudo docker build -t dockerDemo .
+> sudo docker images
+
+
+6. CUBE PROXY
+--------------------------
+> kubectl run dockerdemo --image=dockerdemo --port=8082
+	output: pod dockerdemo created
+> kubectl get pods
+
+
+7. CREATE DEPLOYMENT SERVICE
+---------------------------------
+> kubectl expose pod/dockerdemo --port=8082 --target-port=8082 --type=LoadBalancer
+
+		output: service/dockerdemo exposed
+
+	1. TO GET LIST OF SERVICE RUNNING
+	-----------------------------------
+	> kubectl get service
+
+	2. TO GET DETAILED DESCRIPTION OF APP RUNNING ON POD
+	-----------------------------------------------------
+	> kubectl describe svc dockerdemo
  
