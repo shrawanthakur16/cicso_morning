@@ -217,7 +217,7 @@ response: Hi!! <Your name>
 
 5. BUILD DOCKER IMAGE
 -------------------------
-> sudo docker build -t dockerDemo .
+> sudo docker build -t dockerdemo .
 > sudo docker images
 
 
