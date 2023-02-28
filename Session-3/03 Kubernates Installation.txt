@@ -1,0 +1,170 @@
+***************************************************************************************************************
+KUBERNATE INSTALLTION
+***************************************************************************************************************
+STEP:1 PREPARE AWS UBUNTU INSTANCE
+
+STEP:2 INSTALL DOCKER
+
+STEP:3 INSTALL KUBERNATES
+
+
+***************************************************************************************************************
+STEP:1 PREPARE AWS UBUNTU 22.04 LTS (HVM), SSD VOLUME TYPE INSTANCE
+***************************************************************************************************************
+
+***************************************************************************************************************
+STEP:2 INSTALL DOCKER
+***************************************************************************************************************
+
+> sudo apt-get update
+
+> sudo apt-get install ca-certificates curl gnupg lsb-release
+
+> sudo mkdir -m 0755 -p /etc/apt/keyrings
+> curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+> echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+> sudo apt-get update
+
+> sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+1. TO  VERIFY THE INSTALLTION
+--------------------------------------
+
+> sudo docker -v
+		OUTPUT:Docker version 23.0.1, build a5ee5b1
+
+
+***************************************************************************************************************
+STEP:3 KUBERNATE INSTALLTION
+***************************************************************************************************************
+GOTO GOOGLE >SEARCH FOR KUBERNATES INSTALLTION ON UBUNTU OS
+Link: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+
+> sudo apt-get update
+> sudo apt-get install -y ca-certificates curl
+
+> sudo apt-get install -y apt-transport-https
+
+> sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+
+> echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+
+> sudo apt-get update
+> sudo apt-get install -y kubelet=1.22.8-00 kubeadm=1.22.8-00 kubectl=1.22.8-00
+
+> sudo apt-mark hold kubelet kubeadm kubectl
+
+1. TO CHECK THE VERSION
+-----------------------------
+> kubelet --version
+> kubeadm version
+> kubectl version
+
+
+***************************************************************************************************************
+INITIALIZING KUBERNATE CLUSTER
+***************************************************************************************************************
+
+STEP:1 DISABLING SWAPP
+
+STEP:2 ADDING C-GROUP
+
+STEP:3 INITIALIZING KUBERNATES CLUSTER
+
+***************************************************************************************************************
+STEP:1 DISABLING SWAPP
+***************************************************************************************************************
+> sudo  swapoff -a
+> sudo sed -i '/ swap / s/^/#/' /etc/fstab
+
+***************************************************************************************************************
+STEP:2 ADDING C -GROUP
+***************************************************************************************************************
+edit the docker daemon file
+
+> sudo vi /etc/docker/daemon.json
+
+press 'i' and inser the below command
+
+{
+ "exec-opts":"[native.cgroupdriver=systemd]"
+}
+
+
+press 'esc'
+
+> :wq!
+
+hit enter
+
+once the file is updated we need to restart the service
+
+> sudo systemctl daemon-reload && sudo systemctl restart docker && sudo systemctl restart kubelet
+
+> sudo docker info |grep -i cgroup
+------------------------------------
+OUT PUT:
+Cgroup Driver: systemd
+
+***************************************************************************************************************
+STEP:3 INITALIZING KUBERNATE CLUSTER
+***************************************************************************************************************
+> sudo kubeadm init
+ or
+> sudo kubeadm init --ignore-preflight-errors=all
+
+ if all will be ok. you will get message that
+
+	output: your kubernate control plane has initialized successfully
+
+also you will get some set of commands in CLI as below
+--------------------------------------------------------
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 172.31.21.19:6443 --token zbhaac.1nh6ukxfrnc10bi1 \
+    --discovery-token-ca-cert-hash sha256:6caedda5f4b5c10d2c8329933ab60e43799a2bd15fa5c53ad755182bffef7f82
+
+[Note : to add a worker node follow STEP:1 to STEP:3 and then copy the token on worker node with sudo 'your token']
+
+---------------------------------------------------------------------------------------------------------------
+
+
+output: weave network created
+
+
+1. TO GET NODE DETAILS:
+-----------------------
+> kubectl get node
+
+2. GET CLUSTER DETAILS:
+-----------------------
+> kubectl get svc
+
+3. Deploy any App /Code on Cluster(This will work only if cluster is started)
+-----------------------------------------------------------------------------
+let's deploy weave network to cluster
+---------------------------------------------------------------------------------------------------------------
+> export kubever=$(kubectl version | base64 | tr -d '\n')
+> kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+
+4.VALIDATE RUNNING PODS:
+------------------------
+> kubectl get pods --all-namespaces
+
+
+ 
